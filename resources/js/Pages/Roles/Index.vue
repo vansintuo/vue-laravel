@@ -149,7 +149,7 @@
         </div>
     </AuthenticatedLayout>
 </template>
-  
+
 <script setup>
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import DangerButton from "@/Components/DangerButton.vue";
@@ -181,10 +181,8 @@ const deleteRole = () => {
     })
 }
 
-
 const breadcrumbName = ref('Roles');
 const props = defineProps(['roles', 'filters']);
-
 
 const search = ref(props.filters.search);
 const perPage = ref(10);
@@ -213,4 +211,3 @@ function getRoles() {
 
 
 </script>
-  
