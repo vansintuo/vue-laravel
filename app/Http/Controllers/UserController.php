@@ -15,8 +15,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // Get per page value or default to 10
-        $perPage = $request->input('perPage', 10);
-
+        $perPage = $request->input('perPage') ?: 10;
         return Inertia::render('Users/Index', [
             'users' => User::query()
                 // Filter users by name, email, or type

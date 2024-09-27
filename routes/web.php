@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Location;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -51,7 +53,9 @@ Route::middleware('auth')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('users.index');
         Route::get('/create', [UserController::class, 'create']);
         Route::post('/store',[UserController::class,'store'])->name('users.store');
+        Route::get('/locations',[LocationController::class,'index'])->name('locations.index');
     });
+
 });
 
 require __DIR__ . '/auth.php';

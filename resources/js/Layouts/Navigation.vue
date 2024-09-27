@@ -2,7 +2,7 @@
     <aside class="z-20 hidden w-64 overflow-y-auto bg-gray-900 md:block flex-shrink-0">
         <div class="py-4 text-white">
             <Link class="ml-6 text-lg font-bold text-white" :href="route('dashboard')">
-            Hello World
+            GOO
             </Link>
 
             <ul class="mt-6">
@@ -31,6 +31,21 @@
                             </svg>
                         </template>
                         Users
+                    </NavLink>
+                </li>
+
+
+                <li class="relative px-6 py-3">
+                    <NavLink :href="route('locations.index')" :active="route().current('locations.index')">
+                        <template #icon>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
+                            </svg>
+                        </template>
+                        locations
                     </NavLink>
                 </li>
 
@@ -117,4 +132,33 @@ export default {
 
     },
 }
+
+
+
+
+import { onMounted } from 'vue';
+import L from 'leaflet';
+import axios from 'axios';
+
+const map = ref(null);
+const locations = ref([]);
+
+onMounted(async () => {
+    // Fetch locations from Laravel
+    const response = await axios.get('/locations');
+    locations.value = response.data;
+
+    // Initialize the map
+    map.value = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map.value);
+
+    // Add markers to the map
+    locations.value.forEach(location => {
+        L.marker([location.latitude, location.longitude])
+            .addTo(map.value)
+            .bindPopup(location.name);
+    });
+});
 </script>

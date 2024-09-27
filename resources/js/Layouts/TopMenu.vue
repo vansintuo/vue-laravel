@@ -1,5 +1,5 @@
 <template>
-    <header class="z-10 py-4 bg-white shadow-md">
+    <header class="z-10 py-4 bg-white dark:bg-gray-500 shadow-md">
       <div class="container flex justify-between items-center px-6 mx-auto h-full text-gray-900 md:justify-end">
         <!-- Mobile hamburger -->
         <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu" class="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple" aria-label="Menu">
@@ -7,6 +7,12 @@
             <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
           </svg>
         </button>
+
+        <div>
+        <button @click="toggleTheme">
+          Switch to {{ isDarkMode ? 'Light' : 'dark' }} Mode
+        </button>
+      </div>
 
         <Dropdown>
           <template #trigger>
@@ -33,7 +39,7 @@
                 </svg>
                 Log Out
               </template>
-            </DropdownLink>
+            </DropdownLink> 
           </template>
         </Dropdown>
 
@@ -44,4 +50,24 @@
 <script setup>
 import Dropdown from '@/Components/Dropdown.vue'
 import DropdownLink from '@/Components/DropdownLink.vue'
+import { ref } from 'vue';
+import { onMounted } from 'vue';
+const isDarkMode = ref(false);
+
+// Function to toggle dark mode
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  document.body.classList.toggle('dark', isDarkMode.value);
+  localStorage.setItem('dark', isDarkMode.value);
+};
+
+// Load theme preference from localStorage on mount
+onMounted(() => {
+  const savedTheme = localStorage.getItem('dark');
+  if (savedTheme === 'true') {
+    isDarkMode.value = true;
+    document.body.classList.add('dark');
+  }
+});
 </script>
+

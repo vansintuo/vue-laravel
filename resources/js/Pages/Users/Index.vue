@@ -1,29 +1,26 @@
 <template>
 
-    <Head title="Users" />
+    <Head :title="breadcrumbName" />
 
     <AuthenticatedLayout>
         <template #header>
-            Users
+            <div class="flex justify-between items-center">
+                {{ breadcrumbName }}
+                <Breadcrumb :breadcrumbName="breadcrumbName" />
+            </div>
         </template>
-        <div class="p-4 bg-white rounded-lg shadow-xs">
+        <Toast :successMessage="$page.props.flash.success" />
+
+        <div class="py-3">
             <div class="bg-white overflow-hidden shadow-sm">
                 <div class="flex flex-col md:flex-row justify-between items-center p-2">
                     <div class="flex flex-row md:flex-row justify-between sm:justify-between items-center mb-2 md:mb-0">
-                        <div class="bg-white overflow-hidden shadow-sm">
-                            <div class="flex flex-col md:flex-row justify-end items-center p-2">
-                                <div
-                                    class="flex flex-row md:flex-row justify-between sm:justify-between items-center mb-2 md:mb-0">
-                                    <Link v-if="$page.props.user.permissions.includes('Role create')"
-                                        href="/users/create" class="py-2 px-4 mb-2 md:mr-3 md:mb-0 w-auto whitespace-nowrap focus:outline-none text-white bg-gray-700 hover:bg-gray-800
-                            focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm">
-                                    Add New
-                                    </Link>
-                                </div>
+                        <Link v-if="$page.props.user.permissions.includes('User create')" href="/users/create"
+                            class="py-2 px-4 mb-2 md:mr-3 md:mb-0 w-auto whitespace-nowrap focus:outline-none text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm">
+                        Add New
+                        </Link>
 
-                            </div>
-                        </div>
-                        <select v-model="perPage" @change="getUser" id="roles"
+                        <select v-model="perPage" @change="getUsers" id="users"
                             class="w-40 md:w-40 py-2 px-5 mb-2 md:mb-0 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-500">
                             <option value="10">10 Per Page</option>
                             <option value="15">15 Per Page</option>
@@ -31,7 +28,7 @@
                             <option value="50">50 Per Page</option>
                         </select>
                     </div>
-                    <!-- <div class="relative w-full md:w-80 mb-2 md:mb-0">
+                    <div class="relative w-full md:w-80 mb-2 md:mb-0">
                         <div class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
                             <svg v-if="!search" class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true"
                                 fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -52,61 +49,127 @@
 
                         </div>
                         <input v-model="search" type="text" id="table-search"
-                            class="block w-full p-2 pl-10 text-sm te xt-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            class="block w-full p-2 pl-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Search for items">
-                    </div> -->
-
-
+                    </div>
                 </div>
 
             </div>
-
-            <div class="overflow-hidden mb-8 w-full rounded-lg border shadow-xs">
-                <div class="overflow-x-auto w-full">
-                    <table class="w-full whitespace-no-wrap">
-                        <thead>
-                            <tr
-                                class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b">
-                                <th class="px-4 py-3">No</th>
-                                <th class="px-4 py-3">Name</th>
-                                <th class="px-4 py-3">Email</th>
-                                <th class="px-4 py-3">Type</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg pt-4">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr
+                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase bg-gray-50 border-b">
+                            <th scope="col" class="px-4 py-3">Id</th>
+                            <th scope="col" class="px-4 py-3">Username</th>
+                            <th scope="col" class="px-4 py-3">Type</th>
+                            <th scope="col" class="px-4 py-3">Email</th>
+                            <th scope="col" class="px-4 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y">
+                        <template v-if="users.data.length > 0">
                             <tr v-for="(user, index) in users.data" :key="user.id" class="text-gray-700">
-                                <td class="px-4 py-3 text-sm">{{ index + 1 }}</td>
-                                <td class="px-4 py-3 text-sm">{{ user.name }}</td>
-                                <td class="px-4 py-3 text-sm">{{ user.email }}</td>
-                                <td class="px-4 py-3 text-sm">{{ user.type }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ index + 1 }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ user.name }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ user.type }}
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    {{ user.email }}
+                                </td>
+
+                                <td></td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div
-                    class="px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase bg-gray-50 border-t sm:grid-cols-9">
-                    <pagination :links="users.links" @page-changed="fetchUsers" />
-                </div>
+                        </template>
+
+                        <template v-else>
+                            <tr>
+                                <td colspan="4" class="px-4 py-3 text-sm text-red-500 text-center">
+                                    <div class="flex items-center justify-center gap-5">
+                                        Record Not Found<svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                            class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                        </svg>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+
+                </table>
+                <!-- Pagination -->
+                <TableFooter :totalRecords="users.total" :paginationLinks="users.links" />
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
 
 <script setup>
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import DangerButton from "@/Components/DangerButton.vue";
+import Modal from '@/Components/Modal.vue';
+import Toast from "@/Components/Toast.vue";
+import Breadcrumb from '@/Components/Breadcrumb.vue';
+import TableFooter from '@/Components/TableFooter.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Pagination from '@/Components/Pagination.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch } from "vue";
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { ref, watch, defineProps } from "vue";
 
-const users = ref($page.props.users);
-const search = ref('');
+const showConfirmDeleteRoleModal = ref(false)
+const form = useForm({})
+
+const confirmDeleteRole = (roleId) => {
+    form.data.id = roleId;
+    showConfirmDeleteRoleModal.value = true;
+}
+
+
+const closeModal = () => {
+    showConfirmDeleteRoleModal.value = false;
+}
+
+const deleteRole = () => {
+    const roleId = form.data.id;
+    form.delete(route('roles.destroy', roleId), {
+        onSuccess: () => closeModal()
+    })
+}
+
+const breadcrumbName = ref('Users');
+const props = defineProps(['users', 'filters']);
+
+const search = ref(props.filters.search);
 const perPage = ref(10);
 
-const fetchUsers = (url = route('users.index')) => {
-    router.get(url, { search: search.value, perPage: perPage.value }, { preserveState: true });
-};
+watch(search, (value) => {
+    router.get(
+        "users",
+        { search: value, perPage: perPage.value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+});
 
-// Watchers for reactive changes
-watch([search, perPage], fetchUsers);
+function getUsers() {
+    router.get(
+        "/users",
+        { perPage: perPage.value, search: search.value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+}
+
 
 </script>
